@@ -1,0 +1,6 @@
+{
+  "name": "EDM SMARTGUARD AI - Technical Knowledge Hub",
+  "description": "Thư viện xử lý sự cố kỹ thuật, kinh nghiệm thực tế, quy trình kiểm tra và giải pháp khắc phục máy EDM, CNC, Robot.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
