@@ -7,6 +7,8 @@ import {
   ChevronDown,
   Shield,
   UserCheck,
+  Moon,
+  Sun,
 } from 'lucide-react';
 import { UserRole } from '../types';
 
@@ -17,6 +19,8 @@ interface HeaderProps {
   onRoleChange: (role: UserRole) => void;
   isMobileView: boolean;
   onToggleMobileView: () => void;
+  isDarkMode?: boolean;
+  onToggleDarkMode?: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -26,15 +30,19 @@ export const Header: React.FC<HeaderProps> = ({
   onRoleChange,
   isMobileView,
   onToggleMobileView,
+  isDarkMode = false,
+  onToggleDarkMode,
 }) => {
   const [showRoleMenu, setShowRoleMenu] = useState(false);
 
   const roleLabels: Record<UserRole, { title: string; subtitle: string; color: string }> = {
     admin: { title: 'Quản trị viên', subtitle: 'Toàn quyền hệ thống', color: 'bg-purple-600' },
-    knowledge_manager: { title: 'Quản lý tri thức', subtitle: 'Kiểm duyệt & Xuất bản', color: 'bg-blue-600' },
-    technical_expert: { title: 'Chuyên gia kỹ thuật', subtitle: 'Thẩm định & Chấm điểm', color: 'bg-emerald-600' },
-    technician: { title: 'Kỹ thuật viên', subtitle: 'Sàn xưởng & Đóng góp', color: 'bg-amber-600' },
-    viewer: { title: 'Người xem', subtitle: 'Chỉ đọc', color: 'bg-slate-600' },
+    knowledge_manager: { title: 'Quản lý tri thức (KM)', subtitle: 'Chủ quản điều hành vòng đời', color: 'bg-indigo-600' },
+    technical_expert: { title: 'Chuyên gia kỹ thuật', subtitle: 'Thẩm định & Xác minh chuyên môn', color: 'bg-emerald-600' },
+    content_approver: { title: 'Kiểm duyệt nội dung', subtitle: 'Phê duyệt & Xuất bản SOP', color: 'bg-blue-600' },
+    ai_admin: { title: 'Quản trị AI RAG', subtitle: 'Giám sát nguồn & chất lượng AI', color: 'bg-cyan-600' },
+    technician: { title: 'Kỹ thuật viên / Vendor', subtitle: 'Ghi nhận sự cố & Áp dụng', color: 'bg-amber-600' },
+    viewer: { title: 'Người xem', subtitle: 'Chỉ đọc tra cứu', color: 'bg-slate-600' },
   };
 
   return (
@@ -70,6 +78,30 @@ export const Header: React.FC<HeaderProps> = ({
 
       {/* Right Controls: Role Switcher, Mobile Field Toggle, LIVE status, Notifications, User */}
       <div className="flex items-center gap-3">
+        {/* Night Shift High-Contrast Dark Mode Toggle */}
+        <button
+          onClick={onToggleDarkMode}
+          className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold border transition-all cursor-pointer ${
+            isDarkMode
+              ? 'bg-indigo-900/90 border-indigo-400 text-amber-300 shadow-md shadow-indigo-950/60'
+              : 'bg-white/5 border-white/10 text-slate-300 hover:text-white'
+          }`}
+          title={
+            isDarkMode
+              ? 'Đang bật Chế độ Ca đêm (Tương phản cao) - Bấm để chuyển sang Ca ngày'
+              : 'Bật Chế độ Ca đêm (Giảm mỏi mắt trong xưởng máy)'
+          }
+        >
+          {isDarkMode ? (
+            <Moon className="w-3.5 h-3.5 fill-amber-300 text-amber-300" />
+          ) : (
+            <Sun className="w-3.5 h-3.5 text-amber-400" />
+          )}
+          <span className="hidden sm:inline">
+            {isDarkMode ? 'Ca đêm' : 'Ca ngày'}
+          </span>
+        </button>
+
         {/* Mobile Field View Mode Toggle */}
         <button
           onClick={onToggleMobileView}

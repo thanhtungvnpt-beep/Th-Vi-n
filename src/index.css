@@ -33,3 +33,54 @@ body {
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
   background: rgba(59, 130, 246, 0.65);
 }
+
+/* =========================================================================
+   NIGHT SHIFT HIGH-CONTRAST DARK MODE THEME OVERRIDES
+   ========================================================================= */
+.high-contrast-dark main {
+  background-color: #060e22 !important;
+}
+
+.high-contrast-dark .bg-\[\#edf2f9\] {
+  background-color: #060e22 !important;
+}
+
+.high-contrast-dark .bg-white {
+  background-color: #0b1938 !important;
+  color: #f1f5f9 !important;
+  border-color: rgba(59, 130, 246, 0.28) !important;
+}
+
+.high-contrast-dark .text-slate-800,
+.high-contrast-dark .text-slate-900 {
+  color: #f8fafc !important;
+}
+
+.high-contrast-dark .text-slate-700 {
+  color: #e2e8f0 !important;
+}
+
+.high-contrast-dark .text-slate-600 {
+  color: #cbd5e1 !important;
+}
+
+.high-contrast-dark .text-slate-500 {
+  color: #94a3b8 !important;
+}
+
+.high-contrast-dark .bg-slate-50,
+.high-contrast-dark .bg-slate-100 {
+  background-color: #0f2249 !important;
+  color: #e2e8f0 !important;
+}
+
+.high-contrast-dark .border-slate-200,
+.high-contrast-dark .border-slate-100,
+.high-contrast-dark .border-slate-300 {
+  border-color: rgba(59, 130, 246, 0.25) !important;
+}
+
+.high-contrast-dark .hover\:bg-slate-50:hover,
+.high-contrast-dark .hover\:bg-slate-100:hover {
+  background-color: #162f62 !important;
+}

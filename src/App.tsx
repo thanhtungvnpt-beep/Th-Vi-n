@@ -15,6 +15,7 @@ import { ApprovalModule } from './components/modules/ApprovalModule';
 import { RankingModule } from './components/modules/RankingModule';
 import { DocumentModule } from './components/modules/DocumentModule';
 import { MobileFieldModule } from './components/modules/MobileFieldModule';
+import { LifecycleModule } from './components/modules/LifecycleModule';
 import { NewIncidentModal } from './components/NewIncidentModal';
 import { AIChatBox } from './components/AIChatBox';
 
@@ -46,6 +47,23 @@ export default function App() {
   const [initialIncidentData, setInitialIncidentData] = useState<Partial<IncidentItem> | null>(null);
   const [currentRole, setCurrentRole] = useState<UserRole>('technical_expert');
   const [isMobileView, setIsMobileView] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState<boolean>(() => {
+    try {
+      return localStorage.getItem('edm_smartguard_theme_mode') === 'dark';
+    } catch {
+      return false;
+    }
+  });
+
+  const handleToggleDarkMode = () => {
+    setIsDarkMode((prev) => {
+      const next = !prev;
+      try {
+        localStorage.setItem('edm_smartguard_theme_mode', next ? 'dark' : 'default');
+      } catch {}
+      return next;
+    });
+  };
 
   // Core Data States
   const [incidents, setIncidents] = useState<IncidentItem[]>(INCIDENTS_DATA);
@@ -122,7 +140,11 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-[#091738] text-slate-800 flex flex-col font-sans select-none antialiased">
+    <div
+      className={`min-h-screen bg-[#091738] text-slate-800 flex flex-col font-sans select-none antialiased ${
+        isDarkMode ? 'high-contrast-dark' : ''
+      }`}
+    >
       {/* Top Header Bar */}
       <Header
         searchQuery={searchQuery}
@@ -131,6 +153,8 @@ export default function App() {
         onRoleChange={setCurrentRole}
         isMobileView={isMobileView}
         onToggleMobileView={() => setIsMobileView(!isMobileView)}
+        isDarkMode={isDarkMode}
+        onToggleDarkMode={handleToggleDarkMode}
       />
 
       {/* Main Layout Area */}
@@ -144,6 +168,7 @@ export default function App() {
               else setActiveNav(id);
             }}
             pendingCount={approvalQueue.length}
+            lifecycleAlertCount={3}
           />
         )}
 
@@ -163,6 +188,15 @@ export default function App() {
             />
           ) : (
             <div className="max-w-[1580px] mx-auto space-y-3.5">
+              {/* Module: Vòng đời tri thức (Knowledge Lifecycle Control Center) */}
+              {activeNav === 'lifecycle' && (
+                <LifecycleModule
+                  currentRole={currentRole}
+                  onOpenNewIncidentModal={() => setIsModalOpen(true)}
+                  onNavigateTab={(tab) => setActiveNav(tab)}
+                />
+              )}
+
               {/* Module 1: Xử lý sự cố (Incident Troubleshooting) */}
               {activeNav === 'incidents' && (
                 <IncidentModule

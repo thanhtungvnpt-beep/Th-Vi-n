@@ -9,21 +9,30 @@ import {
   ClipboardCheck,
   Sparkles,
   PieChart,
+  Workflow,
 } from 'lucide-react';
 
 interface SidebarProps {
   activeNav: string;
   onSelectNav: (id: string) => void;
   pendingCount?: number;
+  lifecycleAlertCount?: number;
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({
   activeNav,
   onSelectNav,
   pendingCount = 4,
+  lifecycleAlertCount = 3,
 }) => {
   const menuItems = [
     { id: 'home', label: 'Trang chủ tri thức', icon: Home },
+    {
+      id: 'lifecycle',
+      label: 'Vòng đời tri thức',
+      icon: Workflow,
+      badge: lifecycleAlertCount,
+    },
     { id: 'docs', label: 'Thư viện tài liệu', icon: FileText },
     { id: 'incidents', label: 'Xử lý sự cố', icon: Wrench },
     { id: 'improvement', label: 'Cải tiến kỹ thuật', icon: TrendingUp },
