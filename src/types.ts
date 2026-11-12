@@ -453,12 +453,42 @@ export interface KnowledgeDocumentVersion {
   status: 'draft' | 'verified' | 'published' | 'archived' | 'expired';
   contentPayload: string;
   changeSummary?: string;
-  diffPatch?: Record<string, any>;
+  diffPatch?: {
+    added: string[];
+    removed: string[];
+    modified: string[];
+  };
   authorId: string;
+  author?: string;
   verifierId?: string;
   approverId?: string;
+  approver?: string;
   publishedAt?: string;
+  effectiveFrom?: string;
+  validUntil?: string;
   createdAt: string;
+}
+
+export interface AiRecommendationRecord {
+  id: string;
+  caseId: string;
+  machineId: string;
+  machineModel: string;
+  user: string;
+  userQuestion: string;
+  recommendationText: string;
+  referencedArticles: {
+    articleId: string;
+    version: string;
+    section: string;
+  }[];
+  confidenceScore: number;
+  sourceExcerpts: string;
+  timestamp: string;
+  userFeedback?: 'helpful' | 'not_helpful';
+  humanReviewStatus: 'reviewed_valid' | 'pending_review';
+  insufficientEvidenceFlag: boolean;
+  safetyAlertInjected?: string;
 }
 
 // 03 & 04. Đồ thị liên kết tri thức (M02 Knowledge Graph)

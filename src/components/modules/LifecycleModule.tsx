@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import {
   Workflow,
   Search,
@@ -26,6 +26,9 @@ import {
   Eye,
   Sliders,
   Check,
+  Calculator,
+  Play,
+  GitCompare,
 } from 'lucide-react';
 
 import {
@@ -50,6 +53,9 @@ import { AssignExpertModal } from '../lifecycle/AssignExpertModal';
 import { TechnicalVerificationModal } from '../lifecycle/TechnicalVerificationModal';
 import { OutcomeValidationModal } from '../lifecycle/OutcomeValidationModal';
 import { LifecycleDetailDrawer } from '../lifecycle/LifecycleDetailDrawer';
+import { KpiFormulaModal } from '../lifecycle/KpiFormulaModal';
+import { VersionComparisonModal } from '../lifecycle/VersionComparisonModal';
+import { E2ELifecycleTestModal } from '../lifecycle/E2ELifecycleTestModal';
 
 import { IncidentCaptureWorkspace } from '../lifecycle/workspaces/IncidentCaptureWorkspace';
 import { TechnicalVerificationWorkspace } from '../lifecycle/workspaces/TechnicalVerificationWorkspace';
@@ -57,6 +63,7 @@ import { KnowledgeApprovalWorkspace } from '../lifecycle/workspaces/KnowledgeApp
 import { AiRecommendationWorkspace } from '../lifecycle/workspaces/AiRecommendationWorkspace';
 import { KnowledgeApplicationWorkspace } from '../lifecycle/workspaces/KnowledgeApplicationWorkspace';
 import { OutcomeValidationWorkspace } from '../lifecycle/workspaces/OutcomeValidationWorkspace';
+import { KnowledgeManagerWorkspace } from '../lifecycle/workspaces/KnowledgeManagerWorkspace';
 
 interface LifecycleModuleProps {
   currentRole: UserRole;
@@ -69,8 +76,25 @@ export const LifecycleModule: React.FC<LifecycleModuleProps> = ({
   onOpenNewIncidentModal,
   onNavigateTab,
 }) => {
-  // Cases State
-  const [cases, setCases] = useState<LifecycleCase[]>(LIFECYCLE_CASES_DATA);
+  // Cases State with LocalStorage Persistence
+  const [cases, setCases] = useState<LifecycleCase[]>(() => {
+    try {
+      const saved = localStorage.getItem('edm_smartguard_lifecycle_cases');
+      if (saved) return JSON.parse(saved);
+    } catch (e) {
+      console.warn('Failed to load saved cases from localStorage:', e);
+    }
+    return LIFECYCLE_CASES_DATA;
+  });
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('edm_smartguard_lifecycle_cases', JSON.stringify(cases));
+    } catch (e) {
+      console.warn('Failed to save cases to localStorage:', e);
+    }
+  }, [cases]);
+
   const [qualityAlerts, setQualityAlerts] = useState<LifecycleQualityAlert[]>(LIFECYCLE_QUALITY_ALERTS);
 
   // Filters State
@@ -81,14 +105,16 @@ export const LifecycleModule: React.FC<LifecycleModuleProps> = ({
   const [timeRange, setTimeRange] = useState<string>('30days');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [selectedPriority, setSelectedPriority] = useState<string>('all');
-  const [activeViewTab, setActiveViewTab] = useState<'operations' | 'manager_workspace' | 'quality_matrix'>('operations');
-  const [activeWorkspace, setActiveWorkspace] = useState<'overview' | LifecycleStage>('overview');
+  const [activeWorkspace, setActiveWorkspace] = useState<'overview' | 'km_workspace' | LifecycleStage>('overview');
 
   // Modals & Drawer State
   const [selectedCaseForDrawer, setSelectedCaseForDrawer] = useState<LifecycleCase | null>(null);
   const [assignModalCase, setAssignModalCase] = useState<LifecycleCase | null>(null);
   const [verifyModalCase, setVerifyModalCase] = useState<LifecycleCase | null>(null);
   const [validationModalCase, setValidationModalCase] = useState<LifecycleCase | null>(null);
+  const [isKpiModalOpen, setIsKpiModalOpen] = useState<boolean>(false);
+  const [isVersionModalOpen, setIsVersionModalOpen] = useState<boolean>(false);
+  const [isE2ETestModalOpen, setIsE2ETestModalOpen] = useState<boolean>(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   const showToast = (msg: string) => {
@@ -266,6 +292,27 @@ export const LifecycleModule: React.FC<LifecycleModuleProps> = ({
           {/* Quick Action Buttons */}
           <div className="flex items-center gap-2 flex-wrap">
             <button
+              onClick={() => setIsE2ETestModalOpen(true)}
+              className="px-3.5 py-2 rounded-xl text-xs font-bold bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white shadow-lg shadow-purple-600/30 transition flex items-center gap-1.5 animate-pulse"
+            >
+              <Play className="w-3.5 h-3.5" />
+              <span>Chạy E2E Test (10 bước)</span>
+            </button>
+            <button
+              onClick={() => setIsKpiModalOpen(true)}
+              className="px-3.5 py-2 rounded-xl text-xs font-semibold bg-[#122858] hover:bg-[#1a397c] text-cyan-300 border border-cyan-400/30 transition flex items-center gap-1.5"
+            >
+              <Calculator className="w-3.5 h-3.5 text-cyan-400" />
+              <span>Công thức toán học KPI</span>
+            </button>
+            <button
+              onClick={() => setIsVersionModalOpen(true)}
+              className="px-3.5 py-2 rounded-xl text-xs font-semibold bg-[#122858] hover:bg-[#1a397c] text-slate-200 border border-[#21438a] transition flex items-center gap-1.5"
+            >
+              <GitCompare className="w-3.5 h-3.5 text-blue-400" />
+              <span>So sánh SOP (Diff)</span>
+            </button>
+            <button
               onClick={() => showToast('Báo cáo SLA & Chu kỳ tri thức đã được tổng hợp.')}
               className="px-3.5 py-2 rounded-xl text-xs font-semibold bg-[#122858] hover:bg-[#1a397c] text-slate-200 border border-[#21438a] transition flex items-center gap-1.5"
             >
@@ -275,10 +322,15 @@ export const LifecycleModule: React.FC<LifecycleModuleProps> = ({
             <button
               onClick={() => {
                 setCases(LIFECYCLE_CASES_DATA);
-                showToast('Dữ liệu vòng đời tri thức đã được cập nhật.');
+                try {
+                  localStorage.setItem('edm_smartguard_lifecycle_cases', JSON.stringify(LIFECYCLE_CASES_DATA));
+                } catch (e) {
+                  console.warn(e);
+                }
+                showToast('Dữ liệu vòng đời tri thức đã được khôi phục về mặc định.');
               }}
               className="p-2 rounded-xl text-xs font-semibold bg-[#122858] hover:bg-[#1a397c] text-slate-200 border border-[#21438a] transition"
-              title="Làm mới"
+              title="Khôi phục dữ liệu gốc"
             >
               <RefreshCw className="w-4 h-4 text-slate-300" />
             </button>
@@ -387,7 +439,7 @@ export const LifecycleModule: React.FC<LifecycleModuleProps> = ({
           )}
         </div>
 
-        {/* 6-Stage Pipeline Navigation Tabs */}
+        {/* 6-Stage Pipeline Navigation Tabs + KM Workspace Tab */}
         <div className="pt-2 border-t border-[#162d64] flex items-center justify-between overflow-x-auto gap-2">
           <div className="flex items-center gap-1.5 min-w-max">
             <button
@@ -427,6 +479,22 @@ export const LifecycleModule: React.FC<LifecycleModuleProps> = ({
                 </button>
               );
             })}
+
+            {/* Knowledge Manager Dedicated Workspace Tab */}
+            <button
+              onClick={() => setActiveWorkspace('km_workspace')}
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 ${
+                activeWorkspace === 'km_workspace'
+                  ? 'bg-purple-600 text-white shadow-md shadow-purple-500/20 ring-1 ring-purple-300'
+                  : 'bg-[#0f1d46] text-purple-300 hover:text-white border border-purple-500/40 hover:bg-purple-900/40'
+              }`}
+            >
+              <Users className="w-3.5 h-3.5 text-purple-300" />
+              <span>Bàn điều hành KM (Chuyên gia & SLA)</span>
+              {overdueCasesCount > 0 && (
+                <span className="w-2 h-2 rounded-full bg-rose-400 animate-ping"></span>
+              )}
+            </button>
           </div>
 
           {activeWorkspace !== 'overview' && (
@@ -479,6 +547,7 @@ export const LifecycleModule: React.FC<LifecycleModuleProps> = ({
           cases={cases}
           selectedCase={selectedCaseForDrawer}
           onSelectCase={(c) => setSelectedCaseForDrawer(c)}
+          onOpenVersionModal={() => setIsVersionModalOpen(true)}
           onApproveSop={(caseId) => {
             setCases((prev) =>
               prev.map((c) =>
@@ -571,11 +640,40 @@ export const LifecycleModule: React.FC<LifecycleModuleProps> = ({
         />
       )}
 
+      {/* 8. KNOWLEDGE MANAGER WORKSPACE (SECTION 11 DELIVERABLE) */}
+      {activeWorkspace === 'km_workspace' && (
+        <KnowledgeManagerWorkspace
+          cases={cases}
+          qualityAlerts={qualityAlerts}
+          onOpenAssignModal={(c) => setAssignModalCase(c)}
+          onOpenCaseDrawer={(c) => setSelectedCaseForDrawer(c)}
+          onEscalateCase={(caseId, reason) => {
+            showToast(`Đã tiếp nhận yêu cầu leo thang cho hồ sơ ${caseId}: ${reason}`);
+          }}
+          currentRole={currentRole}
+        />
+      )}
+
       {/* OVERVIEW MODE */}
       {activeWorkspace === 'overview' && (
         <>
-          {/* 2. 8 HIGH-IMPACT KPI METRIC CARDS */}
-      <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-2.5">
+          {/* 2. 8 HIGH-IMPACT KPI METRIC CARDS HEADER */}
+          <div className="flex items-center justify-between px-1">
+            <div className="flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></span>
+              <span className="text-xs font-bold text-slate-700 uppercase tracking-wider">
+                8 Chỉ số hiệu năng cốt lõi (Core Lifecycle KPIs)
+              </span>
+            </div>
+            <button
+              onClick={() => setIsKpiModalOpen(true)}
+              className="text-xs text-blue-600 hover:text-blue-800 hover:underline font-semibold flex items-center gap-1.5"
+            >
+              <Calculator className="w-3.5 h-3.5" />
+              <span>Xem đặc tả công thức toán học (Tử số, Mẫu số & Chuẩn đo)</span>
+            </button>
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-2.5">
         {/* KPI 1 */}
         <div className="bg-white rounded-xl p-3 border border-slate-200/80 shadow-xs flex flex-col justify-between">
           <div className="flex items-center justify-between text-slate-500 text-[11px]">
@@ -848,7 +946,7 @@ export const LifecycleModule: React.FC<LifecycleModuleProps> = ({
           <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
             <span>Sẵn sàng tiếp nhận: <strong className="text-emerald-600 font-bold">2 chuyên gia</strong></span>
             <button
-              onClick={() => showToast('Mở điều phối phân công cân tải.')}
+              onClick={() => setActiveWorkspace('km_workspace')}
               className="text-blue-600 hover:underline font-semibold"
             >
               Điều phối tải
@@ -1125,6 +1223,28 @@ export const LifecycleModule: React.FC<LifecycleModuleProps> = ({
         onOpenValidationModal={(c) => {
           setSelectedCaseForDrawer(null);
           setValidationModalCase(c);
+        }}
+      />
+
+      <KpiFormulaModal
+        isOpen={isKpiModalOpen}
+        onClose={() => setIsKpiModalOpen(false)}
+      />
+
+      <VersionComparisonModal
+        isOpen={isVersionModalOpen}
+        onClose={() => setIsVersionModalOpen(false)}
+        onRollbackVersion={(tag) => {
+          showToast(`Đã khôi phục và kích hoạt tài liệu phiên bản ${tag}.`);
+        }}
+      />
+
+      <E2ELifecycleTestModal
+        isOpen={isE2ETestModalOpen}
+        onClose={() => setIsE2ETestModalOpen(false)}
+        onInjectTestedCase={(testedCase) => {
+          setCases((prev) => [testedCase, ...prev.filter((c) => c.id !== testedCase.id)]);
+          showToast(`Đã nạp hồ sơ mẫu kiểm thử ${testedCase.id} vào danh sách vận hành!`);
         }}
       />
     </div>

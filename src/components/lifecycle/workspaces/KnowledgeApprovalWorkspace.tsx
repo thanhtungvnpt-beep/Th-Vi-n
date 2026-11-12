@@ -8,6 +8,9 @@ import {
   ArrowRight,
   ShieldCheck,
   Award,
+  GitCompare,
+  History,
+  RotateCcw,
 } from 'lucide-react';
 import { LifecycleCase, UserRole } from '../../../types';
 
@@ -16,6 +19,7 @@ interface KnowledgeApprovalWorkspaceProps {
   selectedCase: LifecycleCase | null;
   onSelectCase: (c: LifecycleCase) => void;
   onApproveSop: (caseId: string) => void;
+  onOpenVersionModal?: () => void;
   currentRole: UserRole;
 }
 
@@ -24,6 +28,7 @@ export const KnowledgeApprovalWorkspace: React.FC<KnowledgeApprovalWorkspaceProp
   selectedCase,
   onSelectCase,
   onApproveSop,
+  onOpenVersionModal,
   currentRole,
 }) => {
   const stageCases = cases.filter((c) => c.currentStage === 'knowledge_approval');
@@ -46,12 +51,21 @@ export const KnowledgeApprovalWorkspace: React.FC<KnowledgeApprovalWorkspaceProp
               <h2 className="font-bold text-base text-white">Phê duyệt & Ban hành SOP Chuẩn (Knowledge Approval & Publishing)</h2>
             </div>
             <p className="text-xs text-[#9eb6e2] mt-0.5">
-              Kiểm duyệt tính chuẩn hóa, cấp phiên bản tài liệu (Version Control), thiết lập hạn hiệu lực và phạm vi chia sẻ đa Vendor.
+              Kiểm duyệt tính chuẩn hóa, quản lý phiên bản tài liệu (v1.0 → v2.0 → v2.1), so sánh diff thay đổi, thiết lập hạn hiệu lực và phạm vi chia sẻ đa Vendor.
             </p>
           </div>
         </div>
 
         <div className="flex items-center gap-2">
+          {onOpenVersionModal && (
+            <button
+              onClick={onOpenVersionModal}
+              className="px-3.5 py-1.5 rounded-xl text-xs font-bold bg-[#142d62] hover:bg-[#1e4390] text-cyan-300 border border-cyan-400/30 transition flex items-center gap-1.5"
+            >
+              <GitCompare className="w-3.5 h-3.5" />
+              <span>So sánh phiên bản (Diff)</span>
+            </button>
+          )}
           <span className="text-xs text-slate-300">Phụ trách: <strong className="text-cyan-300">Content Approver</strong></span>
         </div>
       </div>
@@ -84,7 +98,7 @@ export const KnowledgeApprovalWorkspace: React.FC<KnowledgeApprovalWorkspaceProp
                     <div className="flex items-center justify-between">
                       <span className="font-mono font-bold text-cyan-700">{c.id}</span>
                       <span className="font-mono text-[10px] px-1.5 py-0.2 rounded bg-cyan-100 text-cyan-800 font-bold">
-                        {c.publishedArticle?.version || 'v1.0'}
+                        {c.publishedArticle?.version || 'v2.1'}
                       </span>
                     </div>
                     <p className="font-bold text-slate-800 line-clamp-1">{c.title}</p>
@@ -113,9 +127,20 @@ export const KnowledgeApprovalWorkspace: React.FC<KnowledgeApprovalWorkspaceProp
                 </span>
                 <h3 className="font-bold text-base text-slate-800 mt-1">{activeCase.title}</h3>
               </div>
-              <span className="font-mono font-bold text-sm text-cyan-700 px-3 py-1 rounded-xl bg-cyan-50 border border-cyan-200">
-                {activeCase.publishedArticle?.version || 'v2.1'}
-              </span>
+              <div className="flex items-center gap-2">
+                {onOpenVersionModal && (
+                  <button
+                    onClick={onOpenVersionModal}
+                    className="px-2.5 py-1 rounded-lg text-xs font-semibold bg-slate-100 hover:bg-slate-200 text-slate-700 transition flex items-center gap-1"
+                  >
+                    <History className="w-3.5 h-3.5 text-blue-600" />
+                    <span>Lịch sử phiên bản</span>
+                  </button>
+                )}
+                <span className="font-mono font-bold text-sm text-cyan-700 px-3 py-1 rounded-xl bg-cyan-50 border border-cyan-200">
+                  {activeCase.publishedArticle?.version || 'v2.1'}
+                </span>
+              </div>
             </div>
 
             {/* Checklist 4 tiêu chuẩn kiểm duyệt */}
@@ -142,13 +167,21 @@ export const KnowledgeApprovalWorkspace: React.FC<KnowledgeApprovalWorkspaceProp
             </div>
 
             {/* Validity & Sharing Scope Settings */}
-            <div className="grid grid-cols-2 gap-3 text-xs">
+            <div className="grid grid-cols-3 gap-3 text-xs">
               <div className="p-3 rounded-xl border border-slate-200 space-y-1">
                 <span className="text-slate-400 text-[11px] flex items-center gap-1">
                   <Calendar className="w-3.5 h-3.5 text-blue-500" /> Thời hạn hiệu lực
                 </span>
                 <span className="font-bold text-slate-700 block">
                   {activeCase.publishedArticle?.validUntilDate || '12/01/2026 (12 tháng)'}
+                </span>
+              </div>
+              <div className="p-3 rounded-xl border border-slate-200 space-y-1">
+                <span className="text-slate-400 text-[11px] flex items-center gap-1">
+                  <Calendar className="w-3.5 h-3.5 text-amber-500" /> Lịch xét duyệt định kỳ
+                </span>
+                <span className="font-bold text-amber-700 block">
+                  {activeCase.publishedArticle?.reviewScheduledDate || '20/02/2025 (6 tháng)'}
                 </span>
               </div>
               <div className="p-3 rounded-xl border border-slate-200 space-y-1">
@@ -162,7 +195,10 @@ export const KnowledgeApprovalWorkspace: React.FC<KnowledgeApprovalWorkspaceProp
             </div>
 
             {/* Action */}
-            <div className="pt-3 border-t border-slate-100 flex items-center justify-end gap-2">
+            <div className="pt-3 border-t border-slate-100 flex items-center justify-between gap-2">
+              <div className="text-[11px] text-slate-400">
+                Tài liệu sẽ được ký số và tự động lập chỉ mục cho AI Assistant.
+              </div>
               <button
                 onClick={() => onApproveSop(activeCase.id)}
                 className="px-5 py-2 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 shadow-md shadow-cyan-500/20 transition flex items-center gap-2"

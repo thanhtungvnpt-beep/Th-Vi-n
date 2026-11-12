@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Activity,
   AlertTriangle,
@@ -11,6 +11,10 @@ import {
   FileText,
   User,
   Zap,
+  Search,
+  Copy,
+  AlertCircle,
+  ExternalLink,
 } from 'lucide-react';
 import { LifecycleCase, UserRole } from '../../../types';
 
@@ -33,6 +37,17 @@ export const IncidentCaptureWorkspace: React.FC<IncidentCaptureWorkspaceProps> =
 }) => {
   const stageCases = cases.filter((c) => c.currentStage === 'incident_capture');
   const activeCase = selectedCase?.currentStage === 'incident_capture' ? selectedCase : stageCases[0] || cases[0];
+  const [duplicateDismissed, setDuplicateDismissed] = useState<boolean>(false);
+
+  // Check if current case has potential duplicate
+  const potentialDuplicate = activeCase
+    ? cases.find(
+        (c) =>
+          c.id !== activeCase.id &&
+          c.errorCode === activeCase.errorCode &&
+          c.equipmentId === activeCase.equipmentId
+      )
+    : null;
 
   return (
     <div className="space-y-4 animate-in fade-in duration-200">
@@ -50,7 +65,7 @@ export const IncidentCaptureWorkspace: React.FC<IncidentCaptureWorkspaceProps> =
               <h2 className="font-bold text-base text-white">Ghi nhận Sự cố & Phân loại Ban đầu (Incident Capture)</h2>
             </div>
             <p className="text-xs text-[#9eb6e2] mt-0.5">
-              Tiếp nhận lỗi từ sàn máy, đính kèm bằng chứng hiện trường, đánh giá mức độ khẩn cấp và sơ bộ nguyên nhân.
+              Tiếp nhận lỗi từ sàn máy, đính kèm bằng chứng hiện trường, đánh giá mức độ khẩn cấp, phát hiện trùng lặp tự động (Duplicate Detection).
             </p>
           </div>
         </div>
@@ -85,7 +100,10 @@ export const IncidentCaptureWorkspace: React.FC<IncidentCaptureWorkspaceProps> =
                 return (
                   <div
                     key={c.id}
-                    onClick={() => onSelectCase(c)}
+                    onClick={() => {
+                      onSelectCase(c);
+                      setDuplicateDismissed(false);
+                    }}
                     className={`p-3 rounded-xl border cursor-pointer transition text-xs space-y-1.5 ${
                       isSelected
                         ? 'bg-blue-50/80 border-blue-500 shadow-xs ring-1 ring-blue-400'
@@ -139,6 +157,41 @@ export const IncidentCaptureWorkspace: React.FC<IncidentCaptureWorkspaceProps> =
                 <div>Nhà máy: <strong className="text-slate-700">{activeCase.factory} — {activeCase.line}</strong></div>
               </div>
             </div>
+
+            {/* DUPLICATE DETECTION ALERT BANNER */}
+            {potentialDuplicate && !duplicateDismissed && (
+              <div className="p-3.5 rounded-xl bg-amber-50 border border-amber-300 text-amber-900 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs animate-in fade-in duration-150">
+                <div className="flex items-start gap-2.5">
+                  <AlertCircle className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <strong className="text-amber-900 font-bold">CẢNH BÁO TRÙNG LẶP (DUPLICATE DETECTION):</strong>
+                      <span className="px-2 py-0.2 rounded font-mono font-bold bg-amber-200 text-amber-800 text-[10px]">
+                        91% Tương đồng
+                      </span>
+                    </div>
+                    <p className="text-amber-800 text-[11px] mt-0.5">
+                      Phát hiện hồ sơ <strong className="font-mono">{potentialDuplicate.id}</strong> cùng thiết bị <strong className="font-mono">{potentialDuplicate.equipmentId}</strong> và mã lỗi <strong className="font-mono">{potentialDuplicate.errorCode}</strong> đã được giải quyết trước đó.
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2 flex-shrink-0 self-end sm:self-center">
+                  <button
+                    onClick={() => onSelectCase(potentialDuplicate)}
+                    className="px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-white border border-amber-300 text-amber-900 hover:bg-amber-100 transition flex items-center gap-1"
+                  >
+                    <span>Xem hồ sơ cũ</span>
+                    <ExternalLink className="w-3 h-3" />
+                  </button>
+                  <button
+                    onClick={() => setDuplicateDismissed(true)}
+                    className="px-2.5 py-1 rounded-lg text-[11px] text-amber-700 hover:bg-amber-100 transition"
+                  >
+                    Bỏ qua
+                  </button>
+                </div>
+              </div>
+            )}
 
             {/* Diagnostic Details Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
