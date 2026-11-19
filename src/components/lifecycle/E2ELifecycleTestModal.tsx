@@ -262,6 +262,7 @@ export const E2ELifecycleTestModal: React.FC<E2ELifecycleTestModalProps> = ({
 
     const newCase: LifecycleCase = {
       id: 'LC-2025-0199',
+      incidentId: 'INC-2025-0199',
       title: 'Xử lý triệt để Spindle quá nhiệt lỗi E210 qua quy trình SOP v2.1',
       errorCode: 'E210',
       category: 'cnc',
@@ -287,11 +288,9 @@ export const E2ELifecycleTestModal: React.FC<E2ELifecycleTestModalProps> = ({
       createdDate: '12/01/2025',
       dueDate: '16/01/2025',
       reportedBy: {
-        id: 'usr-01',
         name: 'Nguyễn Văn Minh',
         role: 'Kỹ thuật viên ca máy',
         avatar: '/extracted/avatar_user.png',
-        factory: 'SEV',
         vendor: 'KHV',
       },
       assignedExpert: {

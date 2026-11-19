@@ -666,3 +666,180 @@ export interface CrossPlantRolloutAction {
   updatedAt: string;
 }
 
+// =========================================================================
+// MACHINE DIGITAL LOGBOOK LIBRARY (THƯ VIỆN SỔ TAY THIẾT BỊ SỐ HÓA)
+// =========================================================================
+
+export type OemCabinetId =
+  | 'dmg_mori'
+  | 'mazak_makino'
+  | 'trumpf'
+  | 'fanuc_robodrill'
+  | 'atlas_rexroth'
+  | 'other_oem';
+
+export type BookSpineTheme =
+  | 'cobalt'
+  | 'navy'
+  | 'sky'
+  | 'slate'
+  | 'emerald'
+  | 'purple'
+  | 'crimson'
+  | 'amber';
+
+export interface OemCabinetInfo {
+  id: OemCabinetId;
+  shelfCode: string;
+  name: string;
+  shortName: string;
+  country: string;
+  totalAssets: number;
+  shelfLabel: string;
+  accentColor: string;
+}
+
+export interface MachineBook {
+  id: string;
+  assetCode: string;
+  machineName: string;
+  vendorId: OemCabinetId;
+  vendorName: string;
+  cabinetShelfNo: number;
+  positionIndex: number; // 1..7 on shelf
+  completionRate: number;
+  specSubtitle: string;
+  footerTag: string;
+  spineTheme: BookSpineTheme;
+  iconName: 'precision' | 'bolt' | 'settings' | 'speed' | 'build' | 'flare' | 'sync' | 'token';
+  badgeTopRight?: string;
+  adminErrorCount: number;
+  isBlankBook?: boolean;
+  solutionPagesCount: number;
+  plant: 'SEV' | 'P1' | 'P2';
+  lastReadBy?: string;
+  lastReadAt?: string;
+}
+
+export type WeeklyLogPageStatus =
+  | 'signed_off'
+  | 'incident_alert'
+  | 'kaizen_highlight'
+  | 'active_review'
+  | 'planned';
+
+export interface TechnicalAttachmentItem {
+  id: string;
+  fileName: string;
+  fileExtension: string;
+  fileSizeLabel: string;
+  referenceType: 'INCIDENT' | 'SOLUTION' | 'KAIZEN';
+  uploadedBy: string;
+  uploadedAt: string;
+  previewUrl?: string;
+}
+
+export interface FiveWhySolution {
+  id: string;
+  incidentId: string;
+  why1: string;
+  why2: string;
+  why3: string;
+  why4: string;
+  why5RootCause: string;
+  immediateCountermeasure: string;
+  permanentCountermeasure: string;
+  sparePartsNotes?: string;
+  torqueOrTestSpec?: string;
+  submittedBy: string;
+  submittedAt: string;
+  attachments: TechnicalAttachmentItem[];
+}
+
+export interface WeeklyIncidentEntry {
+  id: string; // e.g., '#W41-049'
+  weekNumber: number;
+  priority: 'HIGH' | 'MEDIUM' | 'LOW';
+  priorityLabel: 'Khẩn cấp (Line Stop)' | 'Cảnh báo sớm' | 'Định kỳ';
+  errorCode: string;
+  title: string;
+  technicalDescription: string;
+  assignedTechnicianId: string;
+  assignedTechnicianName: string;
+  deadline: string;
+  status: 'ASSIGNED' | 'IN_PROGRESS' | 'RESOLVED' | 'VERIFIED';
+  createdByAdmin: string;
+  createdAt: string;
+  attachments: TechnicalAttachmentItem[];
+  solution?: FiveWhySolution;
+}
+
+export interface KaizenContributionEntry {
+  id: string;
+  weekNumber: number;
+  authorName: string;
+  authorRole: string;
+  category: string;
+  title: string;
+  description: string;
+  roiSummary: string;
+  pointsAwarded: number;
+  isApproved: boolean;
+  createdAt: string;
+  attachments: TechnicalAttachmentItem[];
+}
+
+export interface BookWeeklyPage {
+  id: string;
+  bookId: string;
+  weekNumber: number;
+  year: number;
+  status: WeeklyLogPageStatus;
+  isSignedOff: boolean;
+  signedOffBy?: string;
+  signedOffAt?: string;
+  oeeRate: number;
+  incidents: WeeklyIncidentEntry[];
+  kaizens: KaizenContributionEntry[];
+}
+
+export interface CrossPlantSosAnswer {
+  id: string;
+  authorName: string;
+  authorPlant: 'SEV' | 'P1' | 'P2';
+  authorGrade: string;
+  content: string;
+  isAccepted: boolean;
+  pointsEarned: number;
+  createdAt: string;
+}
+
+export interface CrossPlantSosItem {
+  id: string;
+  title: string;
+  machineAssetCode: string;
+  oemName: string;
+  errorCode: string;
+  plant: 'SEV' | 'P1' | 'P2';
+  askedBy: string;
+  askedByRole: string;
+  createdAt: string;
+  status: 'open' | 'solved';
+  bountyPoints: number;
+  description: string;
+  answers: CrossPlantSosAnswer[];
+}
+
+export interface WeeklyLeaderboardEntry {
+  rank: number;
+  technicianId: string;
+  name: string;
+  grade: string;
+  plant: 'SEV' | 'P1' | 'P2';
+  weeklyPoints: number;
+  pagesAuthored: number;
+  incidentsResolvedOnTime: number;
+  kaizensApproved: number;
+}
+
+

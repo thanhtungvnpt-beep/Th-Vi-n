@@ -259,11 +259,13 @@ export default function App() {
                 />
               )}
 
-              {/* Module 8: Thư viện tài liệu (Document Library) */}
+              {/* Module 8: Thư viện Sổ tay Thiết bị & Tài liệu (Digital Library) */}
               {activeNav === 'docs' && (
                 <DocumentModule
                   documents={documents}
                   onOpenUploadModal={() => setIsModalOpen(true)}
+                  currentRole={currentRole}
+                  globalSearchQuery={searchQuery}
                 />
               )}
             </div>

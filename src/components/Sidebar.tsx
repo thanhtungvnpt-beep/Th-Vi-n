@@ -33,7 +33,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
       icon: Workflow,
       badge: lifecycleAlertCount,
     },
-    { id: 'docs', label: 'Thư viện tài liệu', icon: FileText },
+    { id: 'docs', label: 'Thư viện thiết bị', icon: FileText },
     { id: 'incidents', label: 'Xử lý sự cố', icon: Wrench },
     { id: 'improvement', label: 'Cải tiến kỹ thuật', icon: TrendingUp },
     { id: 'community', label: 'Cộng đồng kỹ thuật', icon: Users },
