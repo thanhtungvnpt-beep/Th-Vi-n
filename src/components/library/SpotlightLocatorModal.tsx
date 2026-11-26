@@ -1,11 +1,12 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { Search, X, MapPin, BookOpen, AlertCircle, Cpu } from 'lucide-react';
-import { BookWeeklyPage, MachineBook } from '../../types';
+import { BookWeeklyPage, MachineBook, OemCabinetInfo } from '../../types';
 import { OEM_CABINETS } from '../../data/libraryData';
 
 interface SpotlightLocatorModalProps {
   isOpen: boolean;
   books: MachineBook[];
+  cabinets?: OemCabinetInfo[];
   pagesByBookId: Record<string, BookWeeklyPage[]>;
   onClose: () => void;
   onLocateOnShelf: (book: MachineBook) => void;
@@ -15,6 +16,7 @@ interface SpotlightLocatorModalProps {
 export const SpotlightLocatorModal: React.FC<SpotlightLocatorModalProps> = ({
   isOpen,
   books,
+  cabinets = OEM_CABINETS,
   pagesByBookId,
   onClose,
   onLocateOnShelf,
@@ -58,7 +60,7 @@ export const SpotlightLocatorModal: React.FC<SpotlightLocatorModalProps> = ({
 
         if (!matchesBook) return null;
 
-        const cabinet = OEM_CABINETS.find((c) => c.id === book.vendorId);
+        const cabinet = cabinets.find((c) => c.id === book.vendorId);
         return {
           book,
           cabinet,
@@ -67,7 +69,7 @@ export const SpotlightLocatorModal: React.FC<SpotlightLocatorModalProps> = ({
       })
       .filter((item): item is NonNullable<typeof item> => item !== null)
       .slice(0, 10);
-  }, [query, books, pagesByBookId]);
+  }, [query, books, cabinets, pagesByBookId]);
 
   if (!isOpen) return null;
 

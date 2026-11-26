@@ -1,5 +1,5 @@
 import React from 'react';
-import { Plus, AlertTriangle } from 'lucide-react';
+import { Plus, AlertTriangle, Trash2, BookOpen } from 'lucide-react';
 import { MachineBook, OemCabinetId, OemCabinetInfo } from '../../types';
 import { BookSpineCard } from './BookSpineCard';
 
@@ -7,21 +7,25 @@ interface BookshelfCabinetSectionProps {
   cabinet: OemCabinetInfo;
   books: MachineBook[];
   highlightedBookId?: string | null;
+  canManageCabinets?: boolean;
   onSelectBook: (book: MachineBook) => void;
   onOpenAddBook: (cabinetId: OemCabinetId) => void;
+  onDeleteCustomCabinet?: (cabinetId: OemCabinetId) => void;
 }
 
 export const BookshelfCabinetSection: React.FC<BookshelfCabinetSectionProps> = ({
   cabinet,
   books,
   highlightedBookId,
+  canManageCabinets = false,
   onSelectBook,
   onOpenAddBook,
+  onDeleteCustomCabinet,
 }) => {
   const totalAdminAlerts = books.reduce((sum, b) => sum + b.adminErrorCount, 0);
 
   return (
-    <section className="flex flex-col gap-2.5">
+    <section id={`library-cabinet-${cabinet.id}`} className="flex flex-col gap-2.5">
       {/* Cabinet Header Bar */}
       <div
         className={`flex flex-wrap items-center justify-between gap-2 px-4 py-2.5 rounded-xl border ${
@@ -38,6 +42,11 @@ export const BookshelfCabinetSection: React.FC<BookshelfCabinetSectionProps> = (
           <h2 className="text-sm sm:text-base font-bold text-slate-900 tracking-tight truncate">
             {cabinet.shelfCode} • {cabinet.name}
           </h2>
+          {cabinet.isCustom && (
+            <span className="px-2 py-0.5 rounded bg-blue-50 text-blue-700 border border-blue-200 font-mono text-[10px] font-bold shrink-0">
+              TỦ MỚI (ADMIN)
+            </span>
+          )}
           {totalAdminAlerts > 0 && (
             <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-red-100 text-red-700 font-mono text-[10px] font-bold shrink-0">
               <AlertTriangle className="w-3 h-3" />
@@ -50,8 +59,19 @@ export const BookshelfCabinetSection: React.FC<BookshelfCabinetSectionProps> = (
           <span>XUẤT XỨ: {cabinet.country.toUpperCase()}</span>
           <span className="text-slate-300">|</span>
           <span className="font-semibold text-slate-700">
-            SỨC CHỨA TỦ: {cabinet.totalAssets} CUỐN ({books.length} TIÊU BIỂU)
+            SỨC CHỨA TỦ: {cabinet.totalAssets} CUỐN ({books.length}{' '}
+            {cabinet.isCustom ? 'ĐÃ TẠO' : 'TIÊU BIỂU'})
           </span>
+          {cabinet.isCustom && canManageCabinets && books.length === 0 && onDeleteCustomCabinet && (
+            <button
+              type="button"
+              onClick={() => onDeleteCustomCabinet(cabinet.id)}
+              className="p-1 rounded-md text-slate-400 hover:text-red-600 hover:bg-red-50 transition-colors cursor-pointer"
+              title="Xóa kệ tủ trống"
+            >
+              <Trash2 className="w-3.5 h-3.5" />
+            </button>
+          )}
         </div>
       </div>
 
@@ -84,6 +104,19 @@ export const BookshelfCabinetSection: React.FC<BookshelfCabinetSectionProps> = (
                 (Admin Upload)
               </span>
             </button>
+
+            {books.length === 0 && (
+              <div className="col-span-1 sm:col-span-3 xl:col-span-7 h-[250px] rounded-lg border border-dashed border-[#d4c8b4] bg-[#f3ede2]/70 flex flex-col items-center justify-center p-4 text-center">
+                <BookOpen className="w-7 h-7 text-[#8c7355] mb-2" />
+                <div className="text-xs font-bold text-[#5a452d]">
+                  Kệ tủ {cabinet.shortName} đã sẵn sàng tiếp nhận sổ tay máy
+                </div>
+                <p className="text-[11px] text-[#7c664c] mt-1 max-w-md">
+                  Nhấp vào ô &ldquo;Thêm Sách Mới (Admin Upload)&rdquo; bên cạnh để đặt cuốn sổ
+                  tay 52 tuần đầu tiên cho nhà cung cấp này.
+                </p>
+              </div>
+            )}
           </div>
         </div>
 

@@ -24,6 +24,7 @@ import {
   FiveWhySolution,
   KaizenContributionEntry,
   MachineBook,
+  OemCabinetInfo,
   TechnicalAttachmentItem,
   UserRole,
   WeeklyIncidentEntry,
@@ -33,6 +34,7 @@ import { WeeklyIndexModal } from './WeeklyIndexModal';
 
 interface MachineLogbookReaderProps {
   book: MachineBook;
+  cabinets?: OemCabinetInfo[];
   pages: BookWeeklyPage[];
   activeWeek: number;
   currentRole: UserRole;
@@ -67,6 +69,7 @@ function formatFileSize(bytes: number): string {
 
 export const MachineLogbookReader: React.FC<MachineLogbookReaderProps> = ({
   book,
+  cabinets = OEM_CABINETS,
   pages,
   activeWeek,
   currentRole,
@@ -119,7 +122,7 @@ export const MachineLogbookReader: React.FC<MachineLogbookReaderProps> = ({
 
   const currentPage =
     pages.find((p) => p.weekNumber === activeWeek) || pages[Math.max(0, activeWeek - 1)];
-  const cabinet = OEM_CABINETS.find((c) => c.id === book.vendorId);
+  const cabinet = cabinets.find((c) => c.id === book.vendorId);
 
   const canAdminActions =
     currentRole === 'admin' ||

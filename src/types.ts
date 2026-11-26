@@ -676,7 +676,8 @@ export type OemCabinetId =
   | 'trumpf'
   | 'fanuc_robodrill'
   | 'atlas_rexroth'
-  | 'other_oem';
+  | 'other_oem'
+  | (string & {});
 
 export type BookSpineTheme =
   | 'cobalt'
@@ -697,6 +698,8 @@ export interface OemCabinetInfo {
   totalAssets: number;
   shelfLabel: string;
   accentColor: string;
+  isCustom?: boolean;
+  createdBy?: string;
 }
 
 export interface MachineBook {

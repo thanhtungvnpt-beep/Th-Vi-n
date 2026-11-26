@@ -19,6 +19,7 @@ import {
   Command,
   History,
   BookPlus,
+  FolderPlus,
 } from 'lucide-react';
 import {
   BookSpineTheme,
@@ -28,6 +29,7 @@ import {
   KaizenContributionEntry,
   MachineBook,
   OemCabinetId,
+  OemCabinetInfo,
   TechnicalDocumentItem,
   UserRole,
   WeeklyIncidentEntry,
@@ -42,6 +44,7 @@ import {
 } from '../../data/libraryData';
 import { BookshelfCabinetSection } from '../library/BookshelfCabinetSection';
 import { AddBookModal } from '../library/AddBookModal';
+import { AddCabinetModal } from '../library/AddCabinetModal';
 import { MachineLogbookReader } from '../library/MachineLogbookReader';
 import { SpotlightLocatorModal } from '../library/SpotlightLocatorModal';
 import { CommunitySosLeaderboard } from '../library/CommunitySosLeaderboard';
@@ -56,6 +59,7 @@ interface DocumentModuleProps {
 type LibraryViewTab = 'bookshelf' | 'reader' | 'sos_leaderboard' | 'edocs';
 
 const STORAGE_KEYS = {
+  cabinets: 'edm_library_cabinets_v1',
   books: 'edm_library_books_v1',
   pages: 'edm_library_pages_v1',
   sos: 'edm_library_sos_v1',
@@ -79,7 +83,18 @@ export const DocumentModule: React.FC<DocumentModuleProps> = ({
   // Primary Library Tab
   const [activeView, setActiveView] = useState<LibraryViewTab>('bookshelf');
 
-  // Persistent Bookshelf & Logbook States
+  // Persistent Cabinets, Bookshelf & Logbook States
+  const [cabinets, setCabinets] = useState<OemCabinetInfo[]>(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEYS.cabinets);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
+    } catch {}
+    return OEM_CABINETS;
+  });
+
   const [machineBooks, setMachineBooks] = useState<MachineBook[]>(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEYS.books);
@@ -127,6 +142,12 @@ export const DocumentModule: React.FC<DocumentModuleProps> = ({
   // Sync to localStorage
   useEffect(() => {
     try {
+      localStorage.setItem(STORAGE_KEYS.cabinets, JSON.stringify(cabinets));
+    } catch {}
+  }, [cabinets]);
+
+  useEffect(() => {
+    try {
       localStorage.setItem(STORAGE_KEYS.books, JSON.stringify(machineBooks));
     } catch {}
   }, [machineBooks]);
@@ -160,7 +181,9 @@ export const DocumentModule: React.FC<DocumentModuleProps> = ({
   // Modals
   const [isAddBookOpen, setIsAddBookOpen] = useState(false);
   const [addBookCabinetId, setAddBookCabinetId] = useState<OemCabinetId>('dmg_mori');
+  const [isAddCabinetOpen, setIsAddCabinetOpen] = useState(false);
   const [isSpotlightOpen, setIsSpotlightOpen] = useState(false);
+  const isAdmin = currentRole === 'admin';
 
   // Legacy E-Docs States (Preserved 100%)
   const [selectedCategory, setSelectedCategory] = useState('all');
@@ -227,10 +250,10 @@ export const DocumentModule: React.FC<DocumentModuleProps> = ({
 
   // Filtered Cabinets & Books for Bookshelf
   const visibleCabinets = useMemo(() => {
-    return OEM_CABINETS.filter((cab) =>
+    return cabinets.filter((cab) =>
       selectedCabinetId === 'all' ? true : cab.id === selectedCabinetId
     );
-  }, [selectedCabinetId]);
+  }, [cabinets, selectedCabinetId]);
 
   const getFilteredBooksForCabinet = (cabId: OemCabinetId) => {
     const q = shelfSearch.trim().toLowerCase();
@@ -275,7 +298,7 @@ export const DocumentModule: React.FC<DocumentModuleProps> = ({
     footerTag: string;
     spineTheme: BookSpineTheme;
   }) => {
-    const cabinet = OEM_CABINETS.find((c) => c.id === payload.vendorId);
+    const cabinet = cabinets.find((c) => c.id === payload.vendorId);
     const existingInCab = machineBooks.filter((b) => b.vendorId === payload.vendorId);
     const newBook: MachineBook = {
       id: `book-custom-${Date.now()}`,
@@ -283,7 +306,7 @@ export const DocumentModule: React.FC<DocumentModuleProps> = ({
       machineName: payload.machineName,
       vendorId: payload.vendorId,
       vendorName: cabinet?.shortName || 'OEM',
-      cabinetShelfNo: OEM_CABINETS.findIndex((c) => c.id === payload.vendorId) + 1 || 1,
+      cabinetShelfNo: cabinets.findIndex((c) => c.id === payload.vendorId) + 1 || 1,
       positionIndex: existingInCab.length + 1,
       completionRate: 12.0,
       specSubtitle: payload.specSubtitle,
@@ -303,6 +326,35 @@ export const DocumentModule: React.FC<DocumentModuleProps> = ({
       [newBook.id]: buildInitialWeeklyPagesForBook(newBook),
     }));
     setHighlightedBookId(newBook.id);
+  };
+
+  const handleCreateCabinet = (newCabPayload: Omit<OemCabinetInfo, 'id'>) => {
+    if (!isAdmin) return;
+    const newCabinet: OemCabinetInfo = {
+      ...newCabPayload,
+      id: `cab-custom-${Date.now()}`,
+    };
+    setCabinets((prev) => [...prev, newCabinet]);
+    setActiveView('bookshelf');
+    setSelectedCabinetId('all');
+    setShelfSearch('');
+    setTimeout(() => {
+      const el = document.getElementById(`library-cabinet-${newCabinet.id}`);
+      el?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 100);
+  };
+
+  const handleDeleteCustomCabinet = (cabinetId: OemCabinetId) => {
+    if (!isAdmin) return;
+    const target = cabinets.find((c) => c.id === cabinetId);
+    if (!target || !target.isCustom) return;
+    const hasBooks = machineBooks.some((b) => b.vendorId === cabinetId);
+    if (hasBooks) return;
+
+    setCabinets((prev) => prev.filter((c) => c.id !== cabinetId));
+    if (selectedCabinetId === cabinetId) {
+      setSelectedCabinetId('all');
+    }
   };
 
   const handleCreateWeeklyIncident = (
@@ -651,7 +703,9 @@ export const DocumentModule: React.FC<DocumentModuleProps> = ({
                 </span>
                 <span className="text-[11px] text-blue-200">cuốn live</span>
               </div>
-              <span className="text-[11px] text-blue-300 mt-0.5">Toàn bộ 6 tủ OEM &amp; 3 xưởng</span>
+              <span className="text-[11px] text-blue-300 mt-0.5">
+                Toàn bộ {cabinets.length} tủ OEM &amp; 3 xưởng
+              </span>
             </div>
 
             <div className="bg-[#0b3e42]/85 border border-emerald-400/30 rounded-xl px-3.5 py-2.5 flex flex-col justify-between">
@@ -773,19 +827,41 @@ export const DocumentModule: React.FC<DocumentModuleProps> = ({
           </button>
 
           {activeView === 'bookshelf' && (
-            <button
-              type="button"
-              onClick={() => {
-                setAddBookCabinetId(
-                  selectedCabinetId === 'all' ? 'dmg_mori' : selectedCabinetId
-                );
-                setIsAddBookOpen(true);
-              }}
-              className="px-3.5 py-2 rounded-xl bg-[#091738] hover:bg-[#13295c] text-white text-xs font-semibold flex items-center gap-1.5 cursor-pointer"
-            >
-              <Plus className="w-3.5 h-3.5" />
-              <span>Thêm Sách Mới</span>
-            </button>
+            <>
+              <button
+                type="button"
+                onClick={() => setIsAddCabinetOpen(true)}
+                className={`px-3.5 py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5 cursor-pointer border transition-colors ${
+                  isAdmin
+                    ? 'bg-amber-50 hover:bg-amber-100 text-amber-900 border-amber-300'
+                    : 'bg-slate-50 hover:bg-slate-100 text-slate-600 border-slate-200'
+                }`}
+                title={
+                  isAdmin
+                    ? 'Tạo Kệ Sách Nhà Cung Cấp Máy (OEM) mới'
+                    : 'Chỉ Quản trị viên (Admin) mới có quyền tạo kệ mới'
+                }
+              >
+                <FolderPlus className="w-3.5 h-3.5" />
+                <span>Tạo Kệ Sách OEM</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setAddBookCabinetId(
+                    selectedCabinetId === 'all'
+                      ? cabinets[0]?.id || 'dmg_mori'
+                      : selectedCabinetId
+                  );
+                  setIsAddBookOpen(true);
+                }}
+                className="px-3.5 py-2 rounded-xl bg-[#091738] hover:bg-[#13295c] text-white text-xs font-semibold flex items-center gap-1.5 cursor-pointer"
+              >
+                <Plus className="w-3.5 h-3.5" />
+                <span>Thêm Sách Mới</span>
+              </button>
+            </>
           )}
         </div>
       </div>
@@ -839,7 +915,7 @@ export const DocumentModule: React.FC<DocumentModuleProps> = ({
                 Tất cả Tủ Nhà Cung Cấp ({totalBooksLive} cuốn)
               </button>
 
-              {OEM_CABINETS.map((cab) => (
+              {cabinets.map((cab) => (
                 <button
                   key={cab.id}
                   type="button"
@@ -868,11 +944,13 @@ export const DocumentModule: React.FC<DocumentModuleProps> = ({
                   cabinet={cabinet}
                   books={cabBooks}
                   highlightedBookId={highlightedBookId}
+                  canManageCabinets={isAdmin}
                   onSelectBook={(b) => handleOpenBook(b, 41)}
                   onOpenAddBook={(cabId) => {
                     setAddBookCabinetId(cabId);
                     setIsAddBookOpen(true);
                   }}
+                  onDeleteCustomCabinet={handleDeleteCustomCabinet}
                 />
               );
             })}
@@ -887,6 +965,7 @@ export const DocumentModule: React.FC<DocumentModuleProps> = ({
           pages={activeBookPages}
           activeWeek={activeWeek}
           currentRole={currentRole}
+          cabinets={cabinets}
           onSelectWeek={setActiveWeek}
           onBackToShelf={() => setActiveView('bookshelf')}
           onCreateWeeklyIncident={handleCreateWeeklyIncident}
@@ -1111,11 +1190,20 @@ export const DocumentModule: React.FC<DocumentModuleProps> = ({
         </div>
       )}
 
+      {/* Add New OEM Cabinet Modal (Admin) */}
+      <AddCabinetModal
+        isOpen={isAddCabinetOpen}
+        currentRole={currentRole}
+        existingCabinetsCount={cabinets.length}
+        onClose={() => setIsAddCabinetOpen(false)}
+        onCreateCabinet={handleCreateCabinet}
+      />
+
       {/* Add New Book Modal */}
       <AddBookModal
         isOpen={isAddBookOpen}
         defaultCabinetId={addBookCabinetId}
-        cabinets={OEM_CABINETS}
+        cabinets={cabinets}
         onClose={() => setIsAddBookOpen(false)}
         onCreateBook={handleCreateBook}
       />
@@ -1125,6 +1213,7 @@ export const DocumentModule: React.FC<DocumentModuleProps> = ({
         isOpen={isSpotlightOpen}
         books={machineBooks}
         pagesByBookId={pagesByBookId}
+        cabinets={cabinets}
         onClose={() => setIsSpotlightOpen(false)}
         onLocateOnShelf={handleLocateOnShelf}
         onOpenLogbook={handleOpenBook}
