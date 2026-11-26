@@ -30,16 +30,16 @@ export const BookshelfCabinetSection: React.FC<BookshelfCabinetSectionProps> = (
       <div
         className={`flex flex-wrap items-center justify-between gap-2 px-4 py-2.5 rounded-xl border ${
           totalAdminAlerts >= 4
-            ? 'bg-red-50/85 border-red-200/80'
-            : 'bg-white border-slate-200/85'
-        } shadow-xs`}
+            ? 'bg-[#ffdad6]/60 border-[#ba1a1a]/30'
+            : 'bg-white border-[#dce9ff] shadow-xs'
+        }`}
       >
         <div className="flex items-center gap-2.5 min-w-0">
           <span
             className="w-3 h-3 rounded-xs shrink-0"
             style={{ backgroundColor: cabinet.accentColor }}
           />
-          <h2 className="text-sm sm:text-base font-bold text-slate-900 tracking-tight truncate">
+          <h2 className="text-sm sm:text-base font-bold text-[#0b1c30] tracking-tight truncate">
             {cabinet.shelfCode} • {cabinet.name}
           </h2>
           {cabinet.isCustom && (
@@ -122,13 +122,9 @@ export const BookshelfCabinetSection: React.FC<BookshelfCabinetSectionProps> = (
 
         {/* Industrial Wood Bottom Shelf Rail */}
         <div className="w-full h-7 bg-gradient-to-r from-[#6e4e2e] via-[#876239] to-[#6e4e2e] rounded-md shadow-inner flex items-center justify-center px-4 border-t-2 border-[#a67c52] mt-0">
-          <div className="flex items-center gap-2 overflow-hidden">
-            <span className="w-2 h-2 rounded-full bg-[#fde047] opacity-80 shrink-0" />
-            <span className="text-[10px] font-mono uppercase tracking-widest text-[#f5ebd7] font-semibold truncate">
-              {cabinet.shelfLabel}
-            </span>
-            <span className="w-2 h-2 rounded-full bg-[#fde047] opacity-80 shrink-0" />
-          </div>
+          <span className="text-[10px] font-mono uppercase tracking-widest text-[#f5ebd7] font-semibold truncate">
+            {cabinet.shelfLabel}
+          </span>
         </div>
       </div>
     </section>

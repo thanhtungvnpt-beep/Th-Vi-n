@@ -26,7 +26,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   lifecycleAlertCount = 3,
 }) => {
   const menuItems = [
-    { id: 'home', label: 'Trang chủ tri thức', icon: Home },
+    { id: 'home', label: 'Trang chủ · Thư viện', icon: Home },
     {
       id: 'lifecycle',
       label: 'Vòng đời tri thức',
@@ -54,10 +54,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
       <nav className="p-3 space-y-1">
         {menuItems.map((item) => {
           const Icon = item.icon;
-          const isActive =
-            activeNav === item.id ||
-            (item.id === 'home' && activeNav === 'home') ||
-            (item.id === 'analytics' && activeNav === 'analytics');
+          const isActive = activeNav === item.id;
 
           return (
             <button

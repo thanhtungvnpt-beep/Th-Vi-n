@@ -41,7 +41,7 @@ import {
 } from './types';
 
 export default function App() {
-  const [activeNav, setActiveNav] = useState('incidents');
+  const [activeNav, setActiveNav] = useState('home');
   const [searchQuery, setSearchQuery] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [initialIncidentData, setInitialIncidentData] = useState<Partial<IncidentItem> | null>(null);
@@ -163,10 +163,7 @@ export default function App() {
         {!isMobileView && (
           <Sidebar
             activeNav={activeNav}
-            onSelectNav={(id) => {
-              if (id === 'home') setActiveNav('analytics');
-              else setActiveNav(id);
-            }}
+            onSelectNav={(id) => setActiveNav(id)}
             pendingCount={approvalQueue.length}
             lifecycleAlertCount={3}
           />
@@ -177,7 +174,7 @@ export default function App() {
           className={`flex-1 overflow-y-auto min-w-0 transition-all ${
             isMobileView
               ? 'bg-[#091738] p-4 flex items-center justify-center'
-              : 'bg-[#edf2f9] rounded-tl-2xl p-3.5 lg:p-4'
+              : 'bg-[#f8f9ff] rounded-tl-2xl p-4 lg:p-6'
           }`}
         >
           {isMobileView ? (
@@ -218,8 +215,8 @@ export default function App() {
                 />
               )}
 
-              {/* Module 3: Tổng hợp tri thức / Trang chủ tri thức (Analytics & Overview) */}
-              {(activeNav === 'analytics' || activeNav === 'home') && (
+              {/* Module 3: Tổng hợp tri thức (Analytics & Overview) */}
+              {activeNav === 'analytics' && (
                 <AnalyticsModule
                   onNavigateTab={(tab) => setActiveNav(tab)}
                   onOpenNewModal={() => setIsModalOpen(true)}
@@ -259,8 +256,8 @@ export default function App() {
                 />
               )}
 
-              {/* Module 8: Thư viện Sổ tay Thiết bị & Tài liệu (Digital Library) */}
-              {activeNav === 'docs' && (
+              {/* Trang chủ & Thư viện Sổ tay Thiết bị (Digital Library Home) */}
+              {(activeNav === 'home' || activeNav === 'docs') && (
                 <DocumentModule
                   documents={documents}
                   onOpenUploadModal={() => setIsModalOpen(true)}

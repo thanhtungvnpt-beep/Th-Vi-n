@@ -41,8 +41,14 @@ body {
   background-color: #060e22 !important;
 }
 
-.high-contrast-dark .bg-\[\#edf2f9\] {
+.high-contrast-dark .bg-\[\#edf2f9\],
+.high-contrast-dark .bg-\[\#f8f9ff\] {
   background-color: #060e22 !important;
+}
+
+.high-contrast-dark .bg-\[\#eff4ff\] {
+  background-color: #0b1938 !important;
+  border-color: rgba(59, 130, 246, 0.28) !important;
 }
 
 .high-contrast-dark .bg-white {
@@ -52,7 +58,8 @@ body {
 }
 
 .high-contrast-dark .text-slate-800,
-.high-contrast-dark .text-slate-900 {
+.high-contrast-dark .text-slate-900,
+.high-contrast-dark .text-\[\#0b1c30\] {
   color: #f8fafc !important;
 }
 
@@ -60,7 +67,8 @@ body {
   color: #e2e8f0 !important;
 }
 
-.high-contrast-dark .text-slate-600 {
+.high-contrast-dark .text-slate-600,
+.high-contrast-dark .text-\[\#565e74\] {
   color: #cbd5e1 !important;
 }
 
@@ -69,14 +77,16 @@ body {
 }
 
 .high-contrast-dark .bg-slate-50,
-.high-contrast-dark .bg-slate-100 {
+.high-contrast-dark .bg-slate-100,
+.high-contrast-dark .bg-\[\#e5eeff\] {
   background-color: #0f2249 !important;
   color: #e2e8f0 !important;
 }
 
 .high-contrast-dark .border-slate-200,
 .high-contrast-dark .border-slate-100,
-.high-contrast-dark .border-slate-300 {
+.high-contrast-dark .border-slate-300,
+.high-contrast-dark .border-\[\#dce9ff\] {
   border-color: rgba(59, 130, 246, 0.25) !important;
 }
 

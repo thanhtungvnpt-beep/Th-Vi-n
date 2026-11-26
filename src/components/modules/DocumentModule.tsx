@@ -632,139 +632,157 @@ export const DocumentModule: React.FC<DocumentModuleProps> = ({
   const openSosCount = sosItems.filter((s) => s.status === 'open').length;
 
   return (
-    <div className="space-y-3.5 select-none">
-      {/* 1. INDUSTRIAL DIGITAL BOOKSHELF HEADER BANNER */}
-      <div className="relative rounded-2xl overflow-hidden bg-gradient-to-r from-[#091738] via-[#0e2d78] to-[#1249be] text-white shadow-md border border-[#1e4ea8]/50">
-        <div className="relative z-10 px-5 sm:px-6 py-4 space-y-4">
-          <div className="flex flex-wrap items-center justify-between gap-2">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-lg bg-white/10 border border-white/15 text-[11px] font-mono uppercase tracking-wider text-blue-100">
-              <Library className="w-3.5 h-3.5 text-amber-300" />
-              <span>HỆ THỐNG THƯ VIỆN KỸ THUẬT SỐ • TỦ 600 THIẾT BỊ NẶNG</span>
+    <div className="space-y-5 select-none">
+      {/* 1. INDUSTRIAL DIGITAL BOOKSHELF HEADER BANNER (Luminous Manuscript Aesthetic) */}
+      <section className="relative rounded-2xl overflow-hidden bg-[#eff4ff] border border-[#dce9ff] px-5 sm:px-8 py-6 sm:py-7">
+        <div className="absolute -right-24 -top-24 w-96 h-96 rounded-full bg-[#2563eb]/10 blur-3xl pointer-events-none" />
+        <div className="absolute left-1/3 -bottom-16 w-80 h-80 rounded-full bg-[#ffddb8]/35 blur-2xl pointer-events-none" />
+
+        <div className="relative z-10 flex flex-col gap-6">
+          {/* Top Kicker Row */}
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div className="inline-flex items-center gap-2 bg-white px-3.5 py-1.5 rounded-xl shadow-xs border border-[#dce9ff]">
+              <Library className="w-4 h-4 text-[#004ac6]" />
+              <span className="font-mono text-[11px] font-semibold uppercase tracking-wider text-[#0b1c30]">
+                HỆ THỐNG THƯ VIỆN KỸ THUẬT SỐ · TỦ 600 THIẾT BỊ NẶNG
+              </span>
             </div>
 
-            <div className="flex items-center gap-3 text-[11px] font-mono text-blue-100">
-              <span>CHỈ SỐ SỐ HÓA XƯỞNG: 87.4%</span>
+            <div className="flex items-center gap-3 font-mono text-[11px] text-[#565e74]">
+              <span className="font-medium">CHỈ SỐ SỐ HÓA XƯỞNG: 87.4%</span>
               <button
                 type="button"
                 onClick={() => setIsSpotlightOpen(true)}
-                className="px-2.5 py-1 rounded-lg bg-white/15 hover:bg-white/25 border border-white/20 text-white font-semibold flex items-center gap-1.5 cursor-pointer"
+                className="px-3 py-1.5 rounded-lg bg-white hover:bg-[#e5eeff] border border-[#dce9ff] text-[#004ac6] font-semibold flex items-center gap-1.5 cursor-pointer shadow-xs transition-colors whitespace-nowrap shrink-0"
               >
-                <Command className="w-3 h-3" />
+                <Command className="w-3.5 h-3.5" />
                 <span>Tra cứu nhanh ⌘K</span>
               </button>
             </div>
           </div>
 
-          <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-4">
-            <div className="max-w-2xl">
-              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-white">
+          {/* Hero Title + Phiên đọc gần nhất */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-end">
+            <div className="lg:col-span-8 flex flex-col gap-2">
+              <span className="font-mono text-xs font-semibold tracking-widest uppercase text-[#004ac6]">
+                Không gian bản thảo số
+              </span>
+              <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-[#0b1c30] text-balance">
                 Thư Viện Sổ Tay Thiết Bị
               </h1>
-              <p className="text-[#bfd6ff] text-xs sm:text-sm mt-1 leading-relaxed">
+              <p className="text-sm sm:text-base text-[#565e74] max-w-2xl leading-relaxed">
                 Quản lý 600 cuốn sổ tay kỹ thuật phân loại trực quan theo Tủ Nhà Cung Cấp Máy
-                (OEM / Machine Vendors) • Cấu trúc 1 trang = 1 tuần (W01–W52).
+                (OEM / Machine Vendors) · Cấu trúc 1 trang = 1 tuần (W01–W52).
               </p>
             </div>
 
             {/* Phiên đọc gần nhất */}
             {lastReadBook && (
-              <button
-                type="button"
-                onClick={() => handleOpenBook(lastReadBook, 41)}
-                className="bg-white/10 hover:bg-white/15 border border-white/20 rounded-xl px-3.5 py-2.5 flex items-center gap-3 text-left transition-colors cursor-pointer shrink-0"
-              >
-                <div className="w-10 h-10 rounded-lg bg-[#1864f3] flex items-center justify-center shrink-0">
-                  <History className="w-5 h-5 text-white" />
-                </div>
-                <div>
-                  <div className="font-mono text-[10px] uppercase text-blue-200">
-                    Phiên đọc gần nhất
+              <div className="lg:col-span-4 flex justify-start lg:justify-end">
+                <button
+                  type="button"
+                  onClick={() => handleOpenBook(lastReadBook, 41)}
+                  className="bg-white hover:border-[#2563eb]/50 border border-[#dce9ff] rounded-xl p-3.5 shadow-xs flex items-center gap-3.5 text-left transition-all cursor-pointer w-full sm:w-auto"
+                >
+                  <div className="w-12 h-12 rounded-lg bg-[#e5eeff] flex items-center justify-center text-[#004ac6] shrink-0">
+                    <History className="w-6 h-6" />
                   </div>
-                  <div className="text-xs font-bold text-white">{lastReadBook.machineName}</div>
-                  <div className="font-mono text-[10px] text-amber-300">
-                    {lastReadBook.lastReadAt || 'Cách đây 12 phút'} •{' '}
-                    {lastReadBook.lastReadBy || 'KTV. Nam'}
+                  <div className="flex flex-col min-w-0">
+                    <span className="font-mono text-[10px] font-semibold uppercase text-[#565e74]">
+                      Phiên đọc gần nhất
+                    </span>
+                    <span className="text-sm font-bold text-[#0b1c30] truncate">
+                      {lastReadBook.machineName}
+                    </span>
+                    <span className="font-mono text-[11px] font-medium text-[#784b00]">
+                      {lastReadBook.lastReadAt || 'Cách đây 12 phút'} ·{' '}
+                      {lastReadBook.lastReadBy || 'KTV. Nam'}
+                    </span>
                   </div>
-                </div>
-              </button>
+                </button>
+              </div>
             )}
           </div>
 
           {/* 4 Live Library Metric Cards */}
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5">
-            <div className="bg-[#0e2d74]/85 border border-blue-400/30 rounded-xl px-3.5 py-2.5 flex flex-col justify-between">
-              <div className="flex items-center justify-between text-[11px] font-mono text-blue-200 uppercase">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5 pt-1">
+            <div className="bg-white border border-[#dce9ff] rounded-xl p-4 shadow-xs flex flex-col gap-1">
+              <div className="flex items-center justify-between font-mono text-[11px] font-semibold text-[#565e74] uppercase">
                 <span>Tổng Sách Máy</span>
-                <Library className="w-4 h-4 text-blue-300" />
+                <Library className="w-4 h-4 text-[#004ac6]" />
               </div>
-              <div className="flex items-baseline gap-1.5 mt-1">
-                <span className="text-2xl font-bold font-mono tabular-nums text-white">
+              <div className="flex items-baseline gap-1.5 mt-0.5">
+                <span className="text-3xl font-bold font-mono tabular-nums text-[#0b1c30]">
                   {totalBooksLive}
                 </span>
-                <span className="text-[11px] text-blue-200">cuốn live</span>
+                <span className="font-mono text-[11px] text-[#565e74]">cuốn live</span>
               </div>
-              <span className="text-[11px] text-blue-300 mt-0.5">
+              <span className="font-mono text-[11px] text-[#004ac6] font-medium">
                 Toàn bộ {cabinets.length} tủ OEM &amp; 3 xưởng
               </span>
             </div>
 
-            <div className="bg-[#0b3e42]/85 border border-emerald-400/30 rounded-xl px-3.5 py-2.5 flex flex-col justify-between">
-              <div className="flex items-center justify-between text-[11px] font-mono text-emerald-200 uppercase">
+            <div className="bg-white border border-[#dce9ff] rounded-xl p-4 shadow-xs flex flex-col gap-1">
+              <div className="flex items-center justify-between font-mono text-[11px] font-semibold text-[#565e74] uppercase">
                 <span>Trang Giải Pháp</span>
-                <BookOpen className="w-4 h-4 text-emerald-300" />
+                <BookOpen className="w-4 h-4 text-[#004ac6]" />
               </div>
-              <div className="flex items-baseline gap-1.5 mt-1">
-                <span className="text-2xl font-bold font-mono tabular-nums text-white">
+              <div className="flex items-baseline gap-1.5 mt-0.5">
+                <span className="text-3xl font-bold font-mono tabular-nums text-[#0b1c30]">
                   {totalSolutionPages.toLocaleString()}
                 </span>
-                <span className="text-[11px] text-emerald-200">trang</span>
+                <span className="font-mono text-[11px] text-[#565e74]">trang</span>
               </div>
-              <span className="text-[11px] text-emerald-300 mt-0.5">+42 trang tuần W41</span>
-            </div>
-
-            <div className="bg-[#4b2513]/85 border border-amber-400/35 rounded-xl px-3.5 py-2.5 flex flex-col justify-between">
-              <div className="flex items-center justify-between text-[11px] font-mono text-amber-200 uppercase">
-                <span>Thử Thách Admin</span>
-                <AlertTriangle className="w-4 h-4 text-amber-300" />
-              </div>
-              <div className="flex items-baseline gap-1.5 mt-1">
-                <span className="text-2xl font-bold font-mono tabular-nums text-amber-200">
-                  {totalAdminChallenges}
-                </span>
-                <span className="text-[11px] text-amber-100">cuốn cần giải</span>
-              </div>
-              <span className="text-[11px] text-amber-300 font-semibold mt-0.5">
-                Cần báo cáo 5-Why đúng hạn
+              <span className="font-mono text-[11px] text-[#565e74] font-medium">
+                +42 trang tuần W41
               </span>
             </div>
 
-            <div className="bg-[#182c5c]/85 border border-blue-400/30 rounded-xl px-3.5 py-2.5 flex flex-col justify-between">
-              <div className="flex items-center justify-between text-[11px] font-mono text-blue-200 uppercase">
-                <span>Sách Trắng Chờ Mở</span>
-                <BookPlus className="w-4 h-4 text-blue-300" />
+            <div className="bg-white border border-[#dce9ff] rounded-xl p-4 shadow-xs flex flex-col gap-1">
+              <div className="flex items-center justify-between font-mono text-[11px] font-semibold text-[#784b00] uppercase">
+                <span>Thử Thách Admin</span>
+                <AlertTriangle className="w-4 h-4 text-[#784b00]" />
               </div>
-              <div className="flex items-baseline gap-1.5 mt-1">
-                <span className="text-2xl font-bold font-mono tabular-nums text-white">
+              <div className="flex items-baseline gap-1.5 mt-0.5">
+                <span className="text-3xl font-bold font-mono tabular-nums text-[#784b00]">
+                  {totalAdminChallenges}
+                </span>
+                <span className="font-mono text-[11px] text-[#565e74]">cuốn cần giải</span>
+              </div>
+              <span className="font-mono text-[11px] text-[#996100] font-semibold">
+                Thưởng tới 300 pts/mã
+              </span>
+            </div>
+
+            <div className="bg-white border border-[#dce9ff] rounded-xl p-4 shadow-xs flex flex-col gap-1">
+              <div className="flex items-center justify-between font-mono text-[11px] font-semibold text-[#565e74] uppercase">
+                <span>Sách Trắng Chờ Mở</span>
+                <BookPlus className="w-4 h-4 text-[#565e74]" />
+              </div>
+              <div className="flex items-baseline gap-1.5 mt-0.5">
+                <span className="text-3xl font-bold font-mono tabular-nums text-[#0b1c30]">
                   {totalBlankBooks}
                 </span>
-                <span className="text-[11px] text-blue-200">chưa có trang</span>
+                <span className="font-mono text-[11px] text-[#565e74]">chưa có trang</span>
               </div>
-              <span className="text-[11px] text-blue-300 mt-0.5">+50 Điểm khai bút đầu tiên</span>
+              <span className="font-mono text-[11px] text-[#004ac6] font-medium">
+                +50 Điểm khai bút
+              </span>
             </div>
           </div>
         </div>
-      </div>
+      </section>
 
       {/* 2. MODULE VIEW NAVIGATION BAR */}
-      <div className="bg-white rounded-2xl p-2 border border-slate-200/90 shadow-xs flex flex-wrap items-center justify-between gap-2">
+      <div className="bg-white rounded-xl p-2.5 border border-[#dce9ff] shadow-xs flex flex-wrap items-center justify-between gap-2">
         <div className="flex flex-wrap items-center gap-1.5">
           <button
             type="button"
             onClick={() => setActiveView('bookshelf')}
-            className={`px-3.5 py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5 cursor-pointer transition-colors ${
+            className={`px-3.5 py-2 rounded-lg text-xs font-semibold flex items-center gap-1.5 cursor-pointer transition-colors whitespace-nowrap shrink-0 ${
               activeView === 'bookshelf'
-                ? 'bg-[#1864f3] text-white shadow-xs'
-                : 'text-slate-700 hover:bg-slate-100'
+                ? 'bg-[#004ac6] text-white shadow-xs'
+                : 'text-[#565e74] hover:bg-[#e5eeff] hover:text-[#0b1c30]'
             }`}
           >
             <Library className="w-3.5 h-3.5" />
@@ -774,10 +792,10 @@ export const DocumentModule: React.FC<DocumentModuleProps> = ({
           <button
             type="button"
             onClick={() => setActiveView('reader')}
-            className={`px-3.5 py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5 cursor-pointer transition-colors ${
+            className={`px-3.5 py-2 rounded-lg text-xs font-semibold flex items-center gap-1.5 cursor-pointer transition-colors whitespace-nowrap shrink-0 ${
               activeView === 'reader'
-                ? 'bg-[#1864f3] text-white shadow-xs'
-                : 'text-slate-700 hover:bg-slate-100'
+                ? 'bg-[#004ac6] text-white shadow-xs'
+                : 'text-[#565e74] hover:bg-[#e5eeff] hover:text-[#0b1c30]'
             }`}
           >
             <BookOpen className="w-3.5 h-3.5" />
@@ -787,10 +805,10 @@ export const DocumentModule: React.FC<DocumentModuleProps> = ({
           <button
             type="button"
             onClick={() => setActiveView('sos_leaderboard')}
-            className={`px-3.5 py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5 cursor-pointer transition-colors ${
+            className={`px-3.5 py-2 rounded-lg text-xs font-semibold flex items-center gap-1.5 cursor-pointer transition-colors whitespace-nowrap shrink-0 ${
               activeView === 'sos_leaderboard'
-                ? 'bg-[#1864f3] text-white shadow-xs'
-                : 'text-slate-700 hover:bg-slate-100'
+                ? 'bg-[#004ac6] text-white shadow-xs'
+                : 'text-[#565e74] hover:bg-[#e5eeff] hover:text-[#0b1c30]'
             }`}
           >
             <Users className="w-3.5 h-3.5" />
@@ -805,10 +823,10 @@ export const DocumentModule: React.FC<DocumentModuleProps> = ({
           <button
             type="button"
             onClick={() => setActiveView('edocs')}
-            className={`px-3.5 py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5 cursor-pointer transition-colors ${
+            className={`px-3.5 py-2 rounded-lg text-xs font-semibold flex items-center gap-1.5 cursor-pointer transition-colors whitespace-nowrap shrink-0 ${
               activeView === 'edocs'
-                ? 'bg-[#1864f3] text-white shadow-xs'
-                : 'text-slate-700 hover:bg-slate-100'
+                ? 'bg-[#004ac6] text-white shadow-xs'
+                : 'text-[#565e74] hover:bg-[#e5eeff] hover:text-[#0b1c30]'
             }`}
           >
             <FileText className="w-3.5 h-3.5" />
@@ -816,13 +834,13 @@ export const DocumentModule: React.FC<DocumentModuleProps> = ({
           </button>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <button
             type="button"
             onClick={() => setIsSpotlightOpen(true)}
-            className="px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-semibold flex items-center gap-1.5 cursor-pointer"
+            className="px-3 py-2 rounded-lg bg-[#eff4ff] hover:bg-[#e5eeff] text-[#004ac6] text-xs font-semibold flex items-center gap-1.5 cursor-pointer whitespace-nowrap shrink-0 border border-[#dce9ff]"
           >
-            <Sparkles className="w-3.5 h-3.5 text-blue-600" />
+            <Sparkles className="w-3.5 h-3.5" />
             <span>Định vị trên kệ (⌘K)</span>
           </button>
 
@@ -831,10 +849,10 @@ export const DocumentModule: React.FC<DocumentModuleProps> = ({
               <button
                 type="button"
                 onClick={() => setIsAddCabinetOpen(true)}
-                className={`px-3.5 py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5 cursor-pointer border transition-colors ${
+                className={`px-3.5 py-2 rounded-lg text-xs font-semibold flex items-center gap-1.5 cursor-pointer border transition-colors whitespace-nowrap shrink-0 ${
                   isAdmin
-                    ? 'bg-amber-50 hover:bg-amber-100 text-amber-900 border-amber-300'
-                    : 'bg-slate-50 hover:bg-slate-100 text-slate-600 border-slate-200'
+                    ? 'bg-[#ffddb8]/60 hover:bg-[#ffddb8] text-[#653e00] border-[#ffb95f]'
+                    : 'bg-[#f8f9ff] hover:bg-[#eff4ff] text-[#565e74] border-[#dce9ff]'
                 }`}
                 title={
                   isAdmin
@@ -856,7 +874,7 @@ export const DocumentModule: React.FC<DocumentModuleProps> = ({
                   );
                   setIsAddBookOpen(true);
                 }}
-                className="px-3.5 py-2 rounded-xl bg-[#091738] hover:bg-[#13295c] text-white text-xs font-semibold flex items-center gap-1.5 cursor-pointer"
+                className="px-3.5 py-2 rounded-lg bg-[#2563eb] hover:bg-[#004ac6] text-white text-xs font-semibold flex items-center gap-1.5 cursor-pointer shadow-xs whitespace-nowrap shrink-0 transition-colors"
               >
                 <Plus className="w-3.5 h-3.5" />
                 <span>Thêm Sách Mới</span>
@@ -868,48 +886,48 @@ export const DocumentModule: React.FC<DocumentModuleProps> = ({
 
       {/* 3. VIEW 1: DIGITAL BOOKSHELF BY OEM CABINETS */}
       {activeView === 'bookshelf' && (
-        <div className="space-y-4">
+        <div className="space-y-5">
           {/* Toolbar & OEM Cabinet Filters */}
-          <div className="bg-white rounded-2xl p-4 border border-slate-200/85 shadow-xs space-y-3">
+          <div className="bg-white rounded-xl p-4 sm:p-5 border border-[#dce9ff] shadow-xs space-y-3.5">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
               <div className="relative flex-1 max-w-xl">
-                <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                <Search className="w-4 h-4 text-[#565e74] absolute left-3 top-1/2 -translate-y-1/2" />
                 <input
                   type="text"
                   value={shelfSearch}
                   onChange={(e) => setShelfSearch(e.target.value)}
-                  placeholder="Lọc nhanh sách máy trên kệ (VD: BK-DMU-50, MZK-800, 20k RPM, HSK-A63)..."
-                  className="w-full h-9 pl-9 pr-8 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-900 outline-none focus:border-blue-500"
+                  placeholder="Tra cứu sổ tay máy, mã thiết bị (VD: BK-DMU-50, MZK-800, 20k RPM, HSK-A63)..."
+                  className="w-full h-9 pl-9 pr-8 rounded-lg bg-[#eff4ff] border border-[#dce9ff] text-xs text-[#0b1c30] placeholder-[#565e74] outline-none focus:bg-[#e5eeff] focus:border-[#004ac6] transition-colors"
                 />
                 {shelfSearch && (
                   <button
                     type="button"
                     onClick={() => setShelfSearch('')}
-                    className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700 cursor-pointer"
+                    className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[#565e74] hover:text-[#0b1c30] cursor-pointer"
                   >
                     <X className="w-3.5 h-3.5" />
                   </button>
                 )}
               </div>
 
-              <span className="font-mono text-[11px] text-slate-500">
+              <span className="font-mono text-[11px] text-[#565e74]">
                 Nhấp vào gáy sách bất kỳ để mở nhật ký 52 tuần (W01–W52)
               </span>
             </div>
 
             <div className="flex items-center gap-2 overflow-x-auto pb-1">
-              <span className="text-[11px] font-mono uppercase text-slate-500 font-semibold flex items-center gap-1 shrink-0">
-                <Filter className="w-3.5 h-3.5 text-blue-600" />
+              <span className="text-[11px] font-mono uppercase text-[#565e74] font-semibold flex items-center gap-1 shrink-0">
+                <Filter className="w-3.5 h-3.5 text-[#004ac6]" />
                 Lọc tủ nhà cung cấp:
               </span>
 
               <button
                 type="button"
                 onClick={() => setSelectedCabinetId('all')}
-                className={`px-3 py-1.5 rounded-lg font-mono text-[11px] font-semibold whitespace-nowrap cursor-pointer border ${
+                className={`px-3.5 py-1.5 rounded-lg font-mono text-[11px] font-semibold whitespace-nowrap shrink-0 cursor-pointer transition-colors ${
                   selectedCabinetId === 'all'
-                    ? 'bg-[#1864f3] text-white border-[#1864f3]'
-                    : 'bg-slate-100 text-slate-700 border-slate-200 hover:bg-slate-200/70'
+                    ? 'bg-[#004ac6] text-white shadow-xs'
+                    : 'bg-[#e5eeff] text-[#565e74] hover:text-[#0b1c30]'
                 }`}
               >
                 Tất cả Tủ Nhà Cung Cấp ({totalBooksLive} cuốn)
@@ -920,10 +938,10 @@ export const DocumentModule: React.FC<DocumentModuleProps> = ({
                   key={cab.id}
                   type="button"
                   onClick={() => setSelectedCabinetId(cab.id)}
-                  className={`px-3 py-1.5 rounded-lg font-mono text-[11px] font-semibold whitespace-nowrap cursor-pointer border ${
+                  className={`px-3.5 py-1.5 rounded-lg font-mono text-[11px] font-semibold whitespace-nowrap shrink-0 cursor-pointer transition-colors ${
                     selectedCabinetId === cab.id
-                      ? 'bg-[#091738] text-white border-[#091738]'
-                      : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100'
+                      ? 'bg-[#004ac6] text-white shadow-xs'
+                      : 'bg-[#eff4ff] text-[#565e74] hover:bg-[#e5eeff] hover:text-[#0b1c30]'
                   }`}
                 >
                   {cab.shortName} ({cab.totalAssets} máy)
